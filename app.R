@@ -93,10 +93,6 @@ server <- function(input, output) {
   
   })
   
-  ggplot(mtcars, aes(x=factor(cyl)))+
-    geom_bar(stat="bin", width=0.7, fill="steelblue")+
-    theme_minimal() 
-  
 
     # Add the download file details
   output$downloadData <- downloadHandler(
