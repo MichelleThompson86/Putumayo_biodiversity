@@ -14,18 +14,14 @@ Herps_Put_map <-read.csv(file ="Herps_Put_map.csv")
 Putbasin <- readOGR("Geo/Putmayo_WaterShed.shp")
 
 
-
-#Herps_Put <- dplyr::rename(Herps_Put, latitude = decimalLatitude, 
- #                        longitude = decimalLongitude)
-
 ui <- fluidPage(
   titlePanel("Putumayo Watersehd GBIF Data"),
   sidebarLayout(
     sidebarPanel(
       uiOutput("Herps_output"),
       br(),
-      downloadButton("download_filtered", "csv Download Filtered"),   
-      downloadButton("downloadData", "csv Download All"),
+      downloadButton("download_filtered", "csv Download Filtered Data"),   
+      downloadButton("downloadData", "csv Download All Data"),
       br(),
       br()
 
@@ -33,7 +29,8 @@ ui <- fluidPage(
     mainPanel(width = 8, # maximum of 12
               tabsetPanel(type = "tabs",
                           tabPanel("Map", leafletOutput("mymap")),
-                          tabPanel("Summary", plotOutput("summary"))
+                          tabPanel("Summary", plotOutput("summary")),
+                          tabPanel("Metadata", verbatimTextOutput("x"))
                           
               )
     )
@@ -45,8 +42,8 @@ ui <- fluidPage(
 
 server <- function(input, output) {
   output$Herps_output <- renderUI({
-    selectInput(inputId = "Class_input", "Class", sort(unique(Herps_Put$class)), 
-                selected = "Amphibia")
+    selectInput(inputId = "Class_input", "Group", sort(unique(Herps_Put$group)), 
+                selected = "Amphibians")
   })
   # use renderLeaflet for elements of the map that don't change, note setting
   # default sizes
@@ -64,20 +61,20 @@ server <- function(input, output) {
   # Use leafletProxy for elements that change
   
   observe({
-    set <- Herps_Put_map %>% filter(Herps_Put_map$class %in% input$Class_input)
+    set <- Herps_Put_map %>% filter(Herps_Put_map$group %in% input$Class_input)
     
     leafletProxy("mymap") %>% clearMarkers() %>% addCircleMarkers(lng = set$longitude, 
-                                                                  lat = set$latitude, radius=1, weight=3,
-                                                                    opacity = 0.5, fill = TRUE, fillOpacity = 0.2)
+                                                                   lat = set$latitude, radius=1, weight=3,
+                                                                   opacity = 0.5, fill = TRUE, fillOpacity = 0.2)
   })
   
   
   output$summary <- renderPlot({
-    ggplot(Herps_Put, aes(x=factor(class)))+
+    ggplot(Herps_Put, aes(x=factor(group)))+
      geom_bar(stat="count", fill="blue1")+
       geom_text(stat='count', aes(label=..count..), vjust=-0.2, size=6)+
       theme_minimal()+
-      labs(x="Class", y="Records")+
+      labs(x="Group", y="Records")+
       theme_bw()+
       theme(
         panel.grid.major.x=element_blank(),
@@ -97,7 +94,7 @@ server <- function(input, output) {
     # Add the download file details
   output$downloadData <- downloadHandler(
   filename = function() {
-    paste("Put_records", ".csv", sep = "")
+    paste("Putumayo_all", ".csv", sep = "")
   },
   
   content = function(file) {
@@ -109,7 +106,7 @@ server <- function(input, output) {
   # Reactive function based on input
   react_df <- eventReactive(input$Class_input, {
     
-    return(Herps_Put %>% filter(class %in% input$Class_input))
+    return(Herps_Put %>% filter(group %in% input$Class_input))
     
   })
   
@@ -117,7 +114,7 @@ server <- function(input, output) {
   
   output$download_filtered <- downloadHandler(
     filename = function() {
-      paste('GBIFdata-', Sys.Date(), '.csv', sep='')
+      paste('Putumayo_filtered', '.csv', sep='')
     },
     content = function(file) {
       output_d <-react_df()
