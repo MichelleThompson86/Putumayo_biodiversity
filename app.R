@@ -30,7 +30,7 @@ ui <- fluidPage(
               tabsetPanel(type = "tabs",
                           tabPanel("Map", leafletOutput("mymap")),
                           tabPanel("Summary", plotOutput("summary")),
-                          tabPanel("Metadata", verbatimTextOutput("x"))
+                          tabPanel("Metadata", verbatimTextOutput("text"))
                           
               )
     )
@@ -122,6 +122,13 @@ server <- function(input, output) {
     }
   )
   
+  output$text <- renderText({paste("Data filtered from the following: 
+                                    Amphibians:https://doi.org/10.15468/dl.jzabhy
+                                    Reptiles: https://doi.org/10.15468/dl.je6utk
+                                    Fishes: https://doi.org/10.15468/dl.fu5bj3
+                                    Birds: https://doi.org/10.15468/dl.a3pv39 
+                                    Mammals: https://doi.org/10.15468/dl.abn8s4")})
+
   
 }
 
