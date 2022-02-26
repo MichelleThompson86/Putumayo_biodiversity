@@ -7,6 +7,11 @@ library(rgbif)
 library(rgdal)
 library(viridis)
 
+library(WikidataR)
+library(bold)
+library(natserv)
+library(rentrez) #", "reshape", "ritis", "rotl", "rredlist", "solriu")
+
 #load data and change column names
 
 Herps_Put <-read.csv(file ="Herps_Put.csv")
@@ -15,7 +20,7 @@ Putbasin <- readOGR("Geo/Putmayo_WaterShed.shp")
 
 
 ui <- fluidPage(
-  titlePanel("Putumayo Watersehd GBIF Data"),
+  titlePanel("Putumayo Watershed GBIF Data"),
   sidebarLayout(
     sidebarPanel(
       uiOutput("Herps_output"),
